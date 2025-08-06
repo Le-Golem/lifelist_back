@@ -49,6 +49,14 @@ export class TransactionsService {
   
     return query.getMany();
   }
+
+  async delete(id: number) {
+  const result = await this.transactionRepo.delete(id);
+  if (result.affected === 0) {
+    throw new BadRequestException(`Transaction with id ${id} not found`);
+  }
+  return { message: `Transaction with id ${id} deleted successfully` };
+}
   
   // Ajoute update, delete, etc. si besoin
 }

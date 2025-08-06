@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TransactionModule } from './transaction/transaction.module';
 import { AccountModule } from './account/account.module';
+import { RecurringPaymentModule } from './recurring_payment/recurring_payment.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { AccountModule } from './account/account.module';
       synchronize: true,
     }),
     TransactionModule,
-    AccountModule
+    AccountModule,
+    RecurringPaymentModule
   ],
   controllers: [AppController],
   providers: [AppService],

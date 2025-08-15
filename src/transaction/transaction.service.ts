@@ -4,18 +4,41 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TransactionEntity } from 'src/entities/transaction.entity';
 import { FilterTransactionsDto } from './dto/filter_transaction.dto';
+import { AccountService } from 'src/account/account.service';
 
 @Injectable()
 export class TransactionsService {
   constructor(
     @InjectRepository(TransactionEntity)
     private transactionRepo: Repository<TransactionEntity>,
+    private readonly accountService: AccountService,
   ) {}
 
-  create(data: CreateTransactionDto) {
-    const transaction = this.transactionRepo.create(data);
-    return this.transactionRepo.save(transaction);
+  async create(data: CreateTransactionDto) {
+  const transaction = this.transactionRepo.create(data);
+
+  // Récupérer le compte
+  const account = await this.accountService.findById(data.accountId);
+  if (!account) {
+    throw new Error('Account not found');
   }
+
+  // Mettre à jour le montant du compte
+  account.amount = Number(account.amount);
+if (data.debit_or_credit === 'debit') {
+  account.amount -= Number(data.amount);
+} else {
+  account.amount += Number(data.amount);
+}
+
+
+  // Sauvegarder le compte mis à jour
+  await this.accountService.updateAccount(account.id, { amount: account.amount });
+
+  // Sauvegarder la transaction
+  return this.transactionRepo.save(transaction);
+}
+
 
   findAll(filters: FilterTransactionsDto) {
     const query = this.transactionRepo.createQueryBuilder('transaction');

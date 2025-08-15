@@ -17,6 +17,14 @@ export class AccountService {
     return this.accountRepository.find();
   }
 
+  async findById(id: number): Promise<AccountEntity> {
+    const account = await this.accountRepository.findOneBy({ id });
+    if (!account) {
+      throw new Error('Account not found');
+    }
+    return account;
+  }
+
   async create(createAccountDto: CreateAccountDto): Promise<AccountEntity> {
     const account = this.accountRepository.create(createAccountDto);
     return this.accountRepository.save(account);
